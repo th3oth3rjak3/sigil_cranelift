@@ -1,0 +1,11 @@
+[package]
+name = "sigil-cli"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "sigil"
+path = "src/main.rs"
+
+[dependencies]
+sigil-core = { path = "../sigil-core" }

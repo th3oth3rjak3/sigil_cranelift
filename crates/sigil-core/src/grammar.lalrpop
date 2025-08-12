@@ -1,0 +1,83 @@
+use crate::ast::*;
+use std::str::FromStr;
+
+grammar;
+
+pub Program: Vec<Stmt> = <Stmt*>;
+
+Stmt: Stmt = {
+    "fun" <name:Id> "(" <params:ParamList> ")" <body:Block> => 
+        Stmt::FunDecl(name.to_string(), params, Box::new(body)),
+    "return" <expr:Expr> ";" => Stmt::Return(expr),
+    "if" <cond:Expr> <then:Block> => Stmt::If(cond, Box::new(then)),
+    <Block> => <>,
+    <expr:Expr> ";" => Stmt::Expr(expr),
+};
+
+Block: Stmt = "{" <stmts:Stmt*> "}" => Stmt::Block(stmts);
+
+// Simple parameter list - just identifiers separated by commas
+ParamList: Vec<String> = {
+    => vec![], // empty parameter list
+    <first:Id> <rest:("," <Id>)*> => {
+        let mut params = vec![first.to_string()];
+        for param in rest {
+            params.push(param.to_string());
+        }
+        params
+    },
+};
+
+Expr: Expr = ComparisonExpr;
+
+ComparisonExpr: Expr = {
+    <l:ComparisonExpr> "<" <r:AddExpr> => Expr::Less(Box::new(l), Box::new(r)),
+    AddExpr,
+};
+
+AddExpr: Expr = {
+    <l:AddExpr> "+" <r:Primary> => Expr::Add(Box::new(l), Box::new(r)),
+    <l:AddExpr> "-" <r:Primary> => Expr::Sub(Box::new(l), Box::new(r)),
+    Primary,
+};
+
+Primary: Expr = {
+    <name:Id> "(" <args:ArgList> ")" => Expr::Call(name.to_string(), args),
+    <id:Id> => Expr::Variable(id.to_string()),
+    <num:Num> => Expr::Number(i64::from_str(num).unwrap()),
+    "(" <Expr> ")" => <>,
+};
+
+// Simple argument list - expressions separated by commas
+ArgList: Vec<Expr> = {
+    => vec![], // empty argument list
+    <first:Expr> <rest:("," <Expr>)*> => {
+        let mut args = vec![first];
+        for arg in rest {
+            args.push(arg);
+        }
+        args
+    },
+};
+
+match {
+    r"\s*" => { },
+    r"[0-9]+" => Num,
+    r"[a-zA-Z_][a-zA-Z0-9_]*" => Id,
+    "fun",
+    "return", 
+    "if",
+    "(",
+    ")",
+    "{",
+    "}",
+    "+",
+    "-",
+    "<",
+    ";",
+    ",",
+}
+
+extern {
+    type Error = String;
+}

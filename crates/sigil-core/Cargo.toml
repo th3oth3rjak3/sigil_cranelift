@@ -1,0 +1,15 @@
+[package]
+name = "sigil-core"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+lalrpop-util = { workspace = true, features = ["lexer"] }
+cranelift = { workspace = true }
+cranelift-jit = { workspace = true }
+cranelift-module = { workspace = true }
+cranelift-codegen = { workspace = true }
+cranelift-frontend = { workspace = true }
+
+[build-dependencies]
+lalrpop = { workspace = true }

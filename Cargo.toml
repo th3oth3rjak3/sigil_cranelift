@@ -1,0 +1,12 @@
+[workspace]
+members = ["crates/sigil-core", "crates/sigil-cli"]
+resolver = "2"
+
+[workspace.dependencies]
+lalrpop = "0.20"
+lalrpop-util = "0.20"
+cranelift = "0.102"
+cranelift-jit = "0.102"
+cranelift-module = "0.102"
+cranelift-codegen = "0.102"
+cranelift-frontend = "0.102"
